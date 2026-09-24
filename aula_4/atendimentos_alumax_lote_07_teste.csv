@@ -1,0 +1,6 @@
+id_interacao;cliente_id;canal;departamento;status;data_hora;
+INT-0002;CLI-888;"Chat;Suporte;Aberto;2026-09-24 10:30:00;
+INT-0003;CLI-777;Email;Suporte
+INT-0004;CLI-666;Telefone;Cobranca;Pendente;ISTO_NAO_E_UMA_DATA;
+INT-0005;CLI-555;WhatsApp;Vendas/../../Oculto*?;Aberto;2026-09-24 10:30:00;
+cao;Aberto;2026-09-24 10:30:00;
