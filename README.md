@@ -16,7 +16,7 @@ O `prod_ingestao_dados` é um pipeline de dados end-to-end que processa **intera
 | 🌐 **Chat (Site)** | Atendimentos via chat no website da Alumax |
 | 📧 **E-mail** | Comunicações por e-mail com métrica de tempo de primeira resposta |
 
-O pipeline utiliza a **Arquitetura Medalhão** (Bronze → Silver → Gold) no Databricks, garantindo rastreabilidade, qualidade e governança em cada camada. Os dados processados alimentam diretamente os **dashboards de BI** e análises de experiência do cliente.
+O pipeline utiliza a **Arquitetura Medalhão** (Bronze → Silver → Gold) no Databricks, garantindo rastreabilidade, qualidade e governança em cada camada. Os dados processados podem servir para alimentam diretamente os **dashboards de BI** e análises de experiência do cliente.
 
 ### 📊 Resumo Executivo de Insights
 
