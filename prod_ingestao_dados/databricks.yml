@@ -14,19 +14,19 @@ resources:
       tasks:
         - task_key: prod_ingestao_bronze
           notebook_task:
-            notebook_path: /Workspace/Users/joaom.pinheiro@outlook.com/aula_4_1_prod_bronze
+            notebook_path: /etl/etl_bronze.ipynb
             source: WORKSPACE
         - task_key: prod_ingestao_silver
           depends_on:
             - task_key: prod_ingestao_bronze
           notebook_task:
-            notebook_path: /Workspace/Users/joaom.pinheiro@outlook.com/aula_4_1_prod_silver
+            notebook_path: /etl/etl_silver.ipynb
             source: WORKSPACE
         - task_key: prod_ingestao_gold
           depends_on:
             - task_key: prod_ingestao_silver
           notebook_task:
-            notebook_path: /Workspace/Users/joaom.pinheiro@outlook.com/aula_4_1_prod_gold
+            notebook_path: /etl/etl_gold.ipynb
             source: WORKSPACE
       queue:
         enabled: true
