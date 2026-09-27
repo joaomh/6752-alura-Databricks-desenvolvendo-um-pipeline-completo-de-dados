@@ -90,7 +90,7 @@ O pipeline segue o padrão **Medallion Architecture** com três camadas de proce
 └─────────────────────────────────┘
     │
     ▼
-�─────────────────────────────────┐
+┌─────────────────────────────────┐
 │  🥈 SILVER — Limpeza & Padrão   │
 │  Deduplicação, tipos, validação │
 └─────────────────────────────────┘
@@ -108,12 +108,9 @@ O pipeline segue o padrão **Medallion Architecture** com três camadas de proce
 ### 🥉 Camada Bronze — Ingestão
 
 * **Origem:** Arquivos CSV aterrissados em **Unity Catalog Volumes**.
-* **Mecanismo:** **Databricks Auto Loader** (`cloudFiles`) para deteção automática de novos ficheiros.
-* **Tipo:** Streaming Table com ingestion incremental.
 * **Características:**
   * Preserva os dados no formato original (raw) sem transformações.
   * Suporta schema evolution automático.
-  * Idempotente — reprocessamento seguro sem duplicação.
 
 ### 🥈 Camada Silver — Limpeza de Dados
 
@@ -121,9 +118,8 @@ O pipeline segue o padrão **Medallion Architecture** com três camadas de proce
 * **Transformações principais:**
   * **Deduplicação** de registos.
   * **Padronização de tipos** (casting de colunas).
-  * **Validação de domínio** (valores nulos, ranges, formatos).
-  * **Normalização de canal** (valores sujos → `WHATSAPP`, `TELEFONE`, `EMAIL`, `CHAT_SITE`).
-  * **Tratamento de nulos** e valores inválidos.
+  * **Normalização de canal** (`WHATSAPP`, `TELEFONE`, `EMAIL`, `CHAT_SITE`).
+  * **Parsing do jsons** criar novas colunas a partir da coluna semi-estruturada `payload`
 
 ### 🥇 Camada Gold — Regras de Negócio
 
@@ -131,19 +127,12 @@ O pipeline segue o padrão **Medallion Architecture** com três camadas de proce
 * **Tabela final:** `prod.gold.atendimentos_alumax`
 * **Características:**
   * **Particionamento** por período (mês/ano) para eficiência de consulta.
-  * **Métricas calculadas** e colunas derivadas prontas para consumo de BI.
+  * **Cruzamento com informações co clientes** consumimos uma tabela que possuia informações cadastrais dos clientes.
   * **Alimenta diretamente** os dashboards e relatórios de análise.
-  * Esquema otimizado para leitura analítica (colunar).
 
 ### 🕐 Colunas de Auditoria
 
 Todas as camadas (Bronze, Silver e Gold) incluem **colunas de auditoria** com os respetivos **timestamps de processamento**, garantindo rastreabilidade completa do ciclo de vida dos dados:
-
-| Coluna | Descrição |
-|--------|-----------|
-| `_ingested_at` | Timestamp de ingestão na camada Bronze |
-| `_processed_at` | Timestamp de processamento na camada Silver |
-| `_loaded_at` | Timestamp de carregamento na camada Gold |
 
 ---
 
@@ -156,12 +145,6 @@ O job **não utiliza cronograma fixo** (cron schedule). Em vez disso, é acionad
 * 📂 O Databricks monitora continuamente a chegada de novos arquivos CSV no **Unity Catalog Volume**.
 * ⚡ Assim que um novo arquivo é detetado, o job é **automaticamente disparado**.
 * 🔄 Isto garante **baixa latência** entre a chegada dos dados e a sua disponibilidade nos dashboards.
-
-**Vantagens do gatilho File Arrival:**
-
-* ✅ Processamento em **tempo quase real** (event-driven).
-* ✅ **Sem janelas de espera** desnecessárias (vs. agendamento fixo).
-* ✅ **Escala automaticamente** com o volume de arquivos recebidos.
 
 ### Alertas Automáticos
 
@@ -187,7 +170,6 @@ prod_ingestao_dados/
 │   │   └── cleansing.py
 │   └── gold/               # Notebooks da camada Gold
 │       └── business_rules.py
-├── tests/                  # Testes unitários e de integração
 ├── README.md               # Este ficheiro
 └── .gitignore
 ```
@@ -231,43 +213,3 @@ prod_ingestao_dados/
 | **Lakeflow Jobs** | Orquestração e agendamento |
 | **Python / PySpark** | Transformações de dados |
 
----
-
-## 🚀 Como Executar
-
-### Pré-requisitos
-
-* Databricks CLI instalado (`databricks`)
-* Acesso ao workspace do Databricks
-* Permissões no Unity Catalog (`prod`)
-
-### Deploy do Pipeline
-
-```bash
-# Validar a configuração do bundle
-databricks bundle validate
-
-# Deploy para o ambiente de produção
-databricks bundle deploy --target prod
-
-# Executar o job manualmente (se necessário)
-databricks bundle run prod_ingestao_dados --target prod
-```
-
----
-
-## 👥 Equipa
-
-* **Engenharia de Dados** — Manutenção e evolução do pipeline
-* **Análise de BI** — Consumo dos dados e geração de insights
-* **Operações de Atendimento** — Stakeholders das métricas de satisfação
-
----
-
-## 📄 Licença
-
-Propriedade da **Alumax**. Uso interno restrito.
-
----
-
-> _Pipeline construído seguindo as melhores práticas de engenharia de dados corporativa no Databricks._
